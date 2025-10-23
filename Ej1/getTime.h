@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <time.h>
 
-void getCurrentTime(char* fecha, char* hora);
+void getCurrentTime(char* formatTime);
 
 #endif

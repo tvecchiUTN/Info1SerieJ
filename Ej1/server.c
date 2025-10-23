@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 #include "getTime.h"
 #include "network.h"
 
@@ -12,7 +14,8 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-    int puerto = 8008;
+    int cd;
+    int puerto = PUERTO;
     for(int i = 0; i < argc; i++)
     {
         if(i == 1)
@@ -21,19 +24,38 @@ int main(int argc, char **argv)
         }
     }
 
-    int sk = OpenServer(PUERTO);
+    int sk = OpenServer(puerto);
     if (sk < 0)
     {
         fprintf(stderr, "Error iniciando servidor\n");
         return 1;
     }
+
+    printf("Socket creado\n");
+
     while (1)
     {
-        char fecha[32];
-        char hora[16];
 
-        getCurrentTime(fecha, hora);
+        cd = WaitConnect(sk);
+        if(cd < 0)
+        {
+            perror("Wait Connect");
+            break;
+        }
+
+        char sSend[64] = {0};
+
+        printf("Se conecto un cliente\n");
+
+        getCurrentTime(sSend);
+
+        send(cd, sSend, strlen(sSend), 0);
+
+        printf("Mensaje enviado.\n Cerrando\n");
+
+        CloseConnect(cd);
     }
 
-    // write(fd, )
+    CloseServer(sk);
+
 }
