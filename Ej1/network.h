@@ -2,9 +2,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-extern int OpenServer(int portnr);
-extern int CloseServer(int socketfd);
+int OpenServer(int portnr);
+int CloseServer(int socketfd);
 
-extern int ConnectToServer(char * Server, int Port);
-extern int DisconnectFromServer(int socketfd);
+
+int WaitConnect (int msSock);
+int CloseConnect(int sockfd);
+
+int ConnectToServer(char * Server, int Port);
+int DisconnectFromServer(int socketfd);
 
