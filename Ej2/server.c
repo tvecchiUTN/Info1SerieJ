@@ -50,7 +50,7 @@ int main(int argc, char **argv)
             contador++;
         }
 
-        char txStr[1024] = {0};
+        char txStr[1024];
 
         if(len < 0)
         {
