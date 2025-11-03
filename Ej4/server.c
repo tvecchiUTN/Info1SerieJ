@@ -1,10 +1,18 @@
+#include <signal.h>
 #include "funcsServer.h"
 #include "utils.h"
 #include "../network.h"
 
 volatile int crtNew = 1;
 
+volatile int flagEnd = 1;
+
 pthread_mutex_t myMutex;
+
+int sigEnd(int sig)
+{
+    flagEnd = 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -14,6 +22,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error de argumentos\n");
         return ERR;
     }
+
+    signal(SIGINT, sigEnd);
 
     int capMax = 16;
     pthread_t *hilos = malloc(capMax * sizeof(pthread_t));
@@ -30,7 +40,7 @@ int main(int argc, char **argv)
 
     int mainSK = OpenServer(puerto);
 
-    while (1)
+    while (flagEnd)
     {
         if (szHil >= capMax) // Seccion de reajuste de hilos
         {
@@ -64,4 +74,7 @@ int main(int argc, char **argv)
 
         sleep(1); //Reducir la cantidad de procesos
     }
+
+    free(hilos);
+    CloseServer(mainSK);
 }
