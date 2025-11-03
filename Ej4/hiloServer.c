@@ -23,6 +23,15 @@ void *hiloDialogo(void *args)
             flagCreate = 0;
         }
 
+        // Seccion de lectura de comandos
+        int cmdFd = open("comandos.txt", O_RDONLY);
+        if (cmdFd < 0)
+        {
+            printf("NO se pudo abrir el archivo\n");
+            // Supuestamente si no se pudo abrir puedo dejar unos comandos ya implementados
+            // Pero tomara tiempo y es opcional
+        }
+
         int finalizar = 1;
 
         while (finalizar)
@@ -32,14 +41,13 @@ void *hiloDialogo(void *args)
             send(littleSk, "Ingrese el comando: ", 21, 0);
             int err;
             err = checkRecv(msgRx, 32, littleSk);
-            if(!casesError(err, littleSk))
+            if (!casesError(err, littleSk))
             {
                 finalizar = 0;
                 continue;
             }
-            printf("Msg recibed -->%s", msgRx);
 
-            if(!strcmp(msgRx, "#out"))
+            if (!strcmp(msgRx, "#out"))
             {
                 send(littleSk, MSGADIOS, strlen(MSGADIOS), 0);
                 break;
@@ -50,39 +58,27 @@ void *hiloDialogo(void *args)
             int sz = 0;
             for (int sz = 0; vecFuncs[sz]; sz++);
 
-            // Seccion de lectura de comandos
-            int cmdFd = open("comandos.txt", O_RDONLY);
-            if (cmdFd < 0)
-            {
-                printf("NO se pudo abrir el archivo\n");
-                // Supuestamente si no se pudo abrir puedo dejar unos comandos ya implementados
-                // Pero tomara tiempo y es opcional
-            }
-
             // Seccion de ejecucion de funciones
             int i = 0;
-            while (i >= 0)
+            lseek(cmdFd, 0, SEEK_SET);
+            while (1)
             {
                 char cmdStr[16] = {0};
 
-                //Lectura de comandos
-                if (read(cmdFd, cmdStr, 16) < 0)
+                // Lectura de comandos
+                if (read(cmdFd, cmdStr, 16) <= 0)
                 {
-                    send(littleSk, "Comando no encontrado", 22, 0);
+                    send(littleSk, "Comando no encontrado\n", 23, 0);
                     break;
                 }
                 fixStr(cmdStr);
 
-                //Analisis de comandos
+                // Analisis de comandos
                 if (!strcmp(msgRx, cmdStr))
                 {
                     if (i < sz)
                     {
-                        int ret = vecFuncs[i](littleSk);
-                        if (!ret)
-                        {
-                            break;
-                        }
+                        vecFuncs[i](littleSk);
                     }
                 }
                 i++;
@@ -90,6 +86,7 @@ void *hiloDialogo(void *args)
         }
 
         CloseConnect(littleSk);
+        close(cmdFd);
     }
 
     pthread_exit(NULL);
