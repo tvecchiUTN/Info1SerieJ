@@ -55,8 +55,8 @@ void *hiloDialogo(void *args)
 
             // Seccion array de funciones
             int (*vecFuncs[])(int) = {funcInvertir, NULL};
-            int sz = 0;
-            for (int sz = 0; vecFuncs[sz]; sz++);
+            int sz;
+            for (sz = 0; vecFuncs[sz]; sz++);
 
             // Seccion de ejecucion de funciones
             int i = 0;
@@ -76,10 +76,8 @@ void *hiloDialogo(void *args)
                 // Analisis de comandos
                 if (!strcmp(msgRx, cmdStr))
                 {
-                    printf("Muy bien, llegaste hasta aqui level 1\n");
                     if (i < sz)
                     {
-                        printf("Muy bien, llegaste hasta aqui level 2\n");
                         vecFuncs[i](littleSk);
                         break;
                     }

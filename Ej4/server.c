@@ -9,7 +9,7 @@ volatile int flagEnd = 1;
 
 pthread_mutex_t myMutex;
 
-int sigEnd(int sig)
+void sigEnd(int sig)
 {
     flagEnd = 0;
 }
