@@ -11,6 +11,10 @@
 
 int checkPuerto(int argc, char **argv, int *puerto);
 
+int checkRecv(char *strRx, int sz, int fd);
+
+int casesError(int err, int skFd);
+
 int fixStr(char* s);
 
 int invertir(const char* src, char* dest);

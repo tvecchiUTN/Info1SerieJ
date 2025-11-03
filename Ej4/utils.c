@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "../network.h"
 #include "funcsServer.h"
 #include "utils.h"
 
@@ -45,18 +46,20 @@ int casesError(int err, int skFd)
 
         case ERR_LOST_CONECTION:
             printf("Lost conection with client\n");
-            CloseConnect(skFd);
+            return ERR;
         break;
 
         case ERR_TIME_LIMIT:
             send(skFd, MSGTIMEOUT, strlen(MSGTIMEOUT), 0);
-            CloseConnect(skFd);
+            return ERR;
         break;
 
         case ERR_OTHER:
             printf("Hubo un error, revisar problemas\n");
         break;
     }
+
+    return ERR;
 }
 
 int invertir(const char* src, char* dest)
@@ -74,4 +77,40 @@ int invertir(const char* src, char* dest)
     }
     dest[i] = '\0';
     return OK;
+}
+
+int checkRecv(char *strRx, int sz, int fd)
+{
+    int len = -1;
+
+    int crono = 0;
+    while ((len < 0) && crono <= (TIMELIMIT * 2))
+    {
+        len = recv(fd, strRx, sz, MSG_DONTWAIT);
+        if (len >= 0)
+        {
+            break;
+        }
+
+        crono++;
+
+        usleep(500000);
+    }
+
+    if (len > 0)
+    {
+        fixStr(strRx);
+
+        return OK;
+    }
+    else if (!len)
+    {
+        return ERR_LOST_CONECTION;
+    }
+    else if (len < 0)
+    {
+        return ERR_TIME_LIMIT;
+    }
+
+    return ERR_OTHER;
 }

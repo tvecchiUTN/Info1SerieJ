@@ -22,8 +22,6 @@ extern pthread_mutex_t myMutex;
 
 void *hiloDialogo(void *args);
 
-int checkRecv(char *strRx, int sz, int fd);
-
 int funcInvertir(int littleSk);
 
 #endif
