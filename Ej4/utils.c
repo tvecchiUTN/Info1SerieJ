@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "funcsServer.h"
 #include "utils.h"
 
 int checkPuerto(int argc, char **argv, int *puerto)
@@ -18,6 +19,44 @@ int checkPuerto(int argc, char **argv, int *puerto)
     }
 
     return OK;
+}
+
+int fixStr(char* s)
+{
+    int i;
+    for(i = 0; s[i]; i++)
+    {
+        if(s[i] < ' ')
+        {
+            s[i] = '\0';
+            return OK;
+        }
+    }
+    return ERR;
+}
+
+int casesError(int err, int skFd)
+{
+    switch (err)
+    {
+        case OK:
+            return OK;
+        break;
+
+        case ERR_LOST_CONECTION:
+            printf("Lost conection with client\n");
+            CloseConnect(skFd);
+        break;
+
+        case ERR_TIME_LIMIT:
+            send(skFd, MSGTIMEOUT, strlen(MSGTIMEOUT), 0);
+            CloseConnect(skFd);
+        break;
+
+        case ERR_OTHER:
+            printf("Hubo un error, revisar problemas\n");
+        break;
+    }
 }
 
 int invertir(const char* src, char* dest)

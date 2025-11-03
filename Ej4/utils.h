@@ -11,6 +11,8 @@
 
 int checkPuerto(int argc, char **argv, int *puerto);
 
+int fixStr(char* s);
+
 int invertir(const char* src, char* dest);
 
 #endif
