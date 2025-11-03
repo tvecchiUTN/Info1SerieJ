@@ -1,47 +1,10 @@
-#include <pthread.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "funcsServer.h"
 #include "utils.h"
 #include "../network.h"
-
-/*
-typedef struct
-{
-    int fd;
-}param_t;
-*/
 
 volatile int crtNew = 1;
 
 pthread_mutex_t myMutex;
-
-void *hiloDialogo(void *args)
-{
-    int fd = *(int *)args;
-
-    int flagCreate = 1;
-
-    while (1)
-    {
-        int littleSk = WaitConnect(fd);
-
-        if (flagCreate)
-        {
-            pthread_mutex_lock(&myMutex);
-            crtNew = 1;
-            pthread_mutex_unlock(&myMutex);
-            flagCreate = 0;
-        }
-
-        send(littleSk, "Prueba 1 2 3", 13, 0);
-
-        sleep(60);
-
-        CloseConnect(littleSk);
-    }
-
-    pthread_exit(NULL);
-}
 
 int main(int argc, char **argv)
 {
@@ -84,12 +47,12 @@ int main(int argc, char **argv)
             }
         }
 
-        if (crtNew) //Si puedo crar un nuevo hilo
+        if (crtNew) //Si puedo crear un nuevo hilo
         {
             if (!flagMax) //EN caso que no pueda guardar mas
             {
                 pthread_create(hilos + szHil, NULL, hiloDialogo, &mainSK);
-                pthread_detach(hilos + szHil);
+                pthread_detach(*(hilos + szHil));
                 printf("Se creo un hilo para escuchar\n");
                 szHil++;
 
