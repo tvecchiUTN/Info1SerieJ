@@ -76,9 +76,12 @@ void *hiloDialogo(void *args)
                 // Analisis de comandos
                 if (!strcmp(msgRx, cmdStr))
                 {
+                    printf("Muy bien, llegaste hasta aqui level 1\n");
                     if (i < sz)
                     {
+                        printf("Muy bien, llegaste hasta aqui level 2\n");
                         vecFuncs[i](littleSk);
+                        break;
                     }
                 }
                 i++;
